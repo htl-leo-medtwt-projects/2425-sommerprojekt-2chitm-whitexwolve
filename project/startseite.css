@@ -1,0 +1,34 @@
+@font-face {
+    font-family: LondrinaShadow;
+    src: url("./font/LondrinaShadow-Regular.ttf");
+}
+:root{
+    --color: white;
+    --color-background: #0D0023;
+    --fill-color: #0D0023;
+    --text-stroke: 0.01px #1683FF;
+}
+body{
+    margin: 0;
+    top:0;
+    height: 100%;
+    background-color: var(--color-background);
+}
+
+#background {
+    text-align: center;
+    top:0;
+    left:0;
+    color: var(--color);
+    
+}
+#background h1 {
+    top: 0;
+    margin: 0;
+    left: 0;
+    color: #00BBFF;
+    font-size: 3rem;
+    -webkit-text-fill-color: var(--fill-color);
+    -webkit-text-stroke: var(--text-stroke);
+    font-family: LondrinaShadow;
+}
