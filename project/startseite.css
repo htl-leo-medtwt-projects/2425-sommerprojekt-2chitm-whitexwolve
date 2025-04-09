@@ -65,3 +65,38 @@ body{
     margin-left: 25vw;
     margin-right: 25vw;
 }
+
+#areaButtons {
+    margin-top: 15vw;
+    margin-left: 10vw;
+    margin-right: 10vw;
+    background-color: rgba(98, 1, 235, 0.90);
+    border: 20px  solid rgba(90, 1, 235, 0.90);
+    border-radius: 2vw;
+}
+
+#buttons{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    grid-template-columns: auto auto;
+    gap: 10vw;
+     
+}
+
+.button{
+    font-size: 3rem;
+    font-weight: bold;
+    border: 0px solid var(--color-background);
+    background-color: var(--color-background);
+    border-radius: 2vw;  
+    width: 30vw;
+    padding: 1vw;
+
+}
+
+.button:hover{
+    background-color: #00BBFF;
+    cursor: pointer;
+    font-size: 3.5rem
+}

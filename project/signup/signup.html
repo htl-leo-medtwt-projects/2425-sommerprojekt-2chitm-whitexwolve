@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="singup.css">
+    <script src="singup.js" defer></script>
+    <title>Register</title>
+</head>
+<body>
+    <div id="background">
+        <div id="header">
+            <div onclick="redirect('../startseite.html');" id="backButton"><img src="../images/arrow.png" alt="arrowImage"></div>
+            <h1>Register</h1>
+        </div>
+
+        <div id="areaButtons">
+            <div id="buttons">
+                <div class="button">Username</div>
+                <div class="button">
+                    <input type="text" name="Username" id="accountUsername">
+                </div>
+
+                <div class="button">Password</div>
+                <div class="button">
+                    <input type="password" name="Password" id="accountPassword">
+                </div>
+
+                <div class="button">Repeat Password</div>
+                <div class="button">
+                    <input type="password" name="RepeatPassword" id="accountRepeatPassword">
+                </div>
+
+                <div class="button">Age</div>
+                <div class="button">
+                    <input type="number" name="Age" id="accountAge">
+                </div>
+
+                
+                
+                
+                
+            </div>
+            <div id="buttonsubmit" onclick="saveRegisterData()">
+                <p>Submit</p>
+            </div>
+        </div>
+    </div>        
+</body>
+</html>

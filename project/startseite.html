@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="startseite.css">
+    <script src="startseite.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Document</title>
 </head>
@@ -20,10 +21,10 @@
             
             <div id="areaButtons">
                 <div id="buttons">
-                    <div class="button">
+                    <div onclick="redirect('./login/login.html');" class="button">
                         Log-In
                     </div>
-                    <div class="button">
+                    <div class="button" onclick="redirect('./signup/signup.html')">
                         Sign-Up
                     </div>
                 </div>
