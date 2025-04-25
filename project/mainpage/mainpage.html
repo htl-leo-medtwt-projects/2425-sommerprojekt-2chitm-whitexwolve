@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Musik Homepage</title>
+  <link rel="stylesheet" href="mainpage.css" />
+  <script type="module" src="mainpage.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>PLAYLISTS</h2>
+      <div class="playlist-controls">
+        <button class="icon-button" id="remove-playlist-btn">
+          <img src="assets/icons/remove.png" alt="Delete" />
+        </button>
+        <button class="icon-button" id="open-add-playlist">
+          <img src="assets/icons/plus.png" alt="Add" />
+        </button>
+      </div>
+      <div class="playlist-add-form">
+        <input
+          type="text"
+          id="new-playlist-name"
+          placeholder="Neue Playlist..."
+          maxlength="20"
+        />
+        <button id="add-playlist-btn">Hinzufügen</button>
+      </div>
+      <ul class="playlist-list"></ul>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="title">Homepage</h1>
+      <div class="grid">
+        <div
+          class="tile"
+          style="background-image: url('assets/cover/bad_meets_evil.jpg')"
+        ></div>
+        <div
+          class="tile"
+          style="background-image: url('assets/cover/bon_jovi.jpg')"
+        ></div>
+        <div
+          class="tile"
+          style="background-image: url('assets/cover/coldplay.jpg')"
+        ></div>
+        <div
+          class="tile"
+          style="background-image: url('assets/cover/eminem.jpg')"
+        ></div>
+        <div
+          class="tile"
+          style="background-image: url('assets/cover/imagine_dragons.jpg')"
+        ></div>
+        <div
+          class="tile"
+          style="background-image: url('assets/cover/queen.jpg')"
+        ></div>
+      </div>
+
+      <div id="song-list" class="song-list"></div>
+    </main>
+  </div>
+</body>
+</html>
