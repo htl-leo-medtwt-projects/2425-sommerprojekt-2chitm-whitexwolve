@@ -1,9 +1,7 @@
-// mainpage.js (ES6 Module)
-
 import { popSongs } from '../song_data/pop.js';
 import { rapSongs } from '../song_data/rap.js';
 import { rockSongs } from '../song_data/rock.js';
-
+import { questions } from '../song_data/questions.js';
 // Alle Songs zusammenführen
 const masterSongList = [...popSongs, ...rapSongs, ...rockSongs];
 
@@ -146,66 +144,196 @@ confirmAddPlaylistButton.onclick = () => {
   refreshSidebarPlaylists();
 };
 
-// Cover-Tile Klick: Songs anzeigen
+ // Hilfe von Chat-GPT ANFANG
+function saveArtistProgress(artist, stage) {
+  const progress = JSON.parse(localStorage.getItem('artistProgress') || '{}');
+  progress[artist] = stage;
+  localStorage.setItem('artistProgress', JSON.stringify(progress));
+}
+
+function getArtistProgress(artist) {
+  const progress = JSON.parse(localStorage.getItem('artistProgress') || '{}');
+  return progress[artist] || 0; 
+}
+// Hilfe von Chat-GPT ENDE 
+
+const artistNameMapping = {
+  "bad_meets_evil": "Bad Meets Evil",
+  "eminem": "Eminem",
+  "bon_jovi": "Bon Jovi",
+  "coldplay": "Coldplay",
+  "imagine_dragons": "Imagine Dragons",
+  "queen": "Queen"
+};
+
 coverTiles.forEach(tile => {
+  const match = /\/([^\/]+)\.jpg/.exec(tile.style.backgroundImage);
+  if (!match) return;
+  const extractedName = match[1];
+  const artist = artistNameMapping[extractedName];
+
+  if (!artist) return;
+
+  const progress = getArtistProgress(artist);
+
+  // Aktualisiere die Darstellung basierend auf dem Fortschritt
+  if (progress > 0) {
+    tile.classList.remove('locked');
+    tile.style.filter = 'none'; // Entferne Graustufen
+  }
+
+  // Klick-Handler für das Tile
   tile.onclick = () => {
-    coverTiles.forEach(t => t.classList.remove('selected'));
-    tile.classList.add('selected');
-
-    // Hilfe von Chat-GPT ANFANG
-      const match = /\/([^\/]+)\.jpg/.exec(tile.style.backgroundImage);
-      if (!match) return;
-      const raw = match[1].replace(/_/g, ' ');
-      const artist = raw
-        .split(' ')
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-    // Hilfe von Chat-GPT ENDE
-
-    mainSongArea.innerHTML = '';
-    const ul = document.createElement('ul');
-
-    masterSongList.forEach(song => {
-      if (song.bandName === artist) {
-        const li = document.createElement('li');
-        li.innerHTML =
-          `<div class="song-details">${song.bandName} – ${song.songname} (${song.duration})</div>` +
-          `<div class="song-actions">` +
-            `<button class="play-btn">▶️</button>` +
-            `<select class="song-playlist-select"></select>` +
-            `<button class="add-btn">➕</button>` +
-          `</div>`;
-
-        li.querySelector('.play-btn').onclick = () => playAudio(song.path);
-
-        const sel = li.querySelector('.song-playlist-select');
-        savedPlaylists.forEach(pl => {
-          const opt = document.createElement('option');
-          opt.value = pl;
-          opt.textContent = pl;
-          sel.append(opt);
-        });
-
-        // Hilfe von Chat-GPT ANFANG
-        li.querySelector('.add-btn').onclick = () => {
-          const chosen = sel.value;
-          if (!chosen) return;
-          const arr = JSON.parse(localStorage.getItem('playlist-' + chosen) || '[]');
-          if (!arr.some(x => x.path === song.path)) {
-            arr.push(song);
-            localStorage.setItem('playlist-' + chosen, JSON.stringify(arr));
-            refreshSidebarPlaylists();
-          }
-        };
-        // Hilfe von Chat-GPT ENDE
-
-        ul.append(li);
-      }
-    });
-
-    mainSongArea.append(ul);
+    if (progress === 0) {
+      // Stufe 1: Freischaltung des Künstlers
+      showQuiz(artist, 1, success => {
+        if (success) {
+          saveArtistProgress(artist, 1);
+          tile.classList.remove('locked'); // Schloss-Symbol entfernen
+          tile.style.filter = 'none'; // Entferne Graustufen
+          renderSongsForArtist(artist);
+        }
+      });
+    } else {
+      // Zeige die Lieder des Künstlers
+      renderSongsForArtist(artist);
+    }
   };
 });
+
+// Logik für die Cover-Tiles
+ // Hilfe von Chat-GPT ANFANG
+
+coverTiles.forEach(tile => {
+  const match = /\/([^\/]+)\.jpg/.exec(tile.style.backgroundImage);
+  if (!match) return;
+  const extractedName = match[1];
+  const artist = artistNameMapping[extractedName];
+
+// Hilfe von Chat-GPT ENDE
+
+  if (!artist) return;
+
+  const artistData = masterSongList.find(song => song.bandName === artist);
+  if (artistData && artistData.locked) {
+    tile.classList.add('locked');
+  }
+
+  // Aktualisiere die Darstellung basierend auf dem Fortschritt
+  const progress = getArtistProgress(artist);
+  if (progress > 0) {
+    tile.classList.remove('locked');
+    tile.style.filter = 'none'; // Entferne Graustufen
+  }
+
+  // Klick-Handler für das Tile
+  tile.onclick = () => {
+    if (progress === 0) {
+      // Stufe 1: Freischaltung des Künstlers
+      showQuiz(artist, 1, success => {
+        if (success) {
+          saveArtistProgress(artist, 1);
+          tile.classList.remove('locked'); // Schloss-Symbol entfernen
+          tile.style.filter = 'none'; // Entferne Graustufen
+          renderSongsForArtist(artist);
+        }
+      });
+    } else if (progress === 1) {
+      // Stufe 2: Freischaltung der ersten Hälfte der Lieder
+      showQuiz(artist, 2, success => {
+        if (success) {
+          saveArtistProgress(artist, 2);
+          renderSongsForArtist(artist);
+        }
+      });
+    } else if (progress === 2) {
+      // Stufe 3: Freischaltung der zweiten Hälfte der Lieder
+      showQuiz(artist, 3, success => {
+        if (success) {
+          saveArtistProgress(artist, 3);
+          renderSongsForArtist(artist);
+        }
+      });
+    }
+  };
+});
+
+function renderSongsForArtist(artist) {
+  const progress = getArtistProgress(artist); // Fortschritt abrufen
+  mainSongArea.innerHTML = '';
+  const ul = document.createElement('ul');
+
+  masterSongList.forEach((song, index) => {
+    if (song.bandName === artist) {
+      const li = document.createElement('li');
+      li.className = 'song-item';
+
+      // Songdetails
+      const songDetails = document.createElement('div');
+      songDetails.className = 'song-details';
+      songDetails.textContent = `${song.bandName} – ${song.songname} (${song.duration})`;
+
+      // Abspielbutton
+      const playButton = document.createElement('button');
+      playButton.textContent = '▶️';
+      playButton.className = 'play-btn';
+      playButton.disabled = !(progress > 1 || (progress === 1 && index < masterSongList.length / 2));
+      playButton.onclick = () => playAudio(song.path);
+
+      // Dropdown-Menü
+      const dropdown = document.createElement('select');
+      dropdown.className = 'playlist-dropdown';
+      savedPlaylists.forEach(playlist => {
+        const option = document.createElement('option');
+        option.value = playlist;
+        option.textContent = playlist;
+        dropdown.append(option);
+      });
+
+      // Bestätigungsbutton
+      const addButton = document.createElement('button');
+      addButton.textContent = '➕';
+      addButton.className = 'add-btn';
+      addButton.disabled = !(progress > 1 || (progress === 1 && index < masterSongList.length / 2));
+      addButton.onclick = () => {
+        const selectedPlaylist = dropdown.value;
+        const playlistSongs = JSON.parse(localStorage.getItem('playlist-' + selectedPlaylist) || '[]');
+        playlistSongs.push(song);
+        localStorage.setItem('playlist-' + selectedPlaylist, JSON.stringify(playlistSongs));
+        refreshSidebarPlaylists(); // Sidebar aktualisieren
+      };
+
+      // Aktionen nur erlauben, wenn der Fortschritt es zulässt
+      if (progress > 1 || (progress === 1 && index < masterSongList.length / 2)) {
+        li.classList.remove('locked');
+      } else {
+        li.classList.add('locked');
+        playButton.disabled = true;
+        addButton.disabled = true;
+
+        // Klick-Handler für gesperrte Lieder
+        li.onclick = () => {
+          showQuiz(artist, progress + 1, success => {
+            if (success) {
+              saveArtistProgress(artist, progress + 1);
+              renderSongsForArtist(artist);
+            }
+          });
+        };
+      }
+
+      // Elemente zusammenfügen
+      const actions = document.createElement('div');
+      actions.className = 'song-actions';
+      actions.append(playButton, dropdown, addButton);
+
+      li.append(songDetails, actions);
+      ul.append(li);
+    }
+  });
+
+  mainSongArea.append(ul);
+}
 
 // Audio abspielen
 function playAudio(path) {
@@ -222,3 +350,77 @@ function playAudio(path) {
 
 // Initial Sidebar rendern
 refreshSidebarPlaylists();
+
+
+
+function showQuiz(artist, stage, callback) {
+  const artistData = questions.find(q => q.artist === artist);
+  if (!artistData) {
+    console.error(`Keine Fragen für den Künstler "${artist}" gefunden.`);
+    return;
+  }
+
+  const question = artistData.questions[stage - 1]; // Frage basierend auf der Stufe
+  if (!question) {
+    console.error(`Keine Frage für Stufe ${stage} des Künstlers "${artist}" gefunden.`);
+    return;
+  }
+
+  const quizContainer = document.createElement('div');
+  quizContainer.className = 'quiz-container';
+  quizContainer.innerHTML = `
+    <div class="quiz">
+      <h2>Quiz für ${artist} - Stufe ${stage}</h2>
+      <div class="quiz-question">
+        <p>${question.question}</p>
+      </div>
+      <div class="quiz-options">
+        ${question.options
+          .sort(() => Math.random() - 0.5) // Zufällige Anordnung der Antworten
+          .map(
+            option =>
+              `<button class="quiz-option" data-correct="${option === question.correct}">${option}</button>`
+          )
+          .join('')}
+      </div>
+    </div>
+  `;
+  document.body.append(quizContainer);
+
+  quizContainer.querySelectorAll('.quiz-option').forEach(button => {
+    button.onclick = () => {
+      const isCorrect = button.getAttribute('data-correct') === 'true';
+      if (isCorrect) {
+        button.classList.add('correct');
+        setTimeout(() => {
+          quizContainer.remove();
+          callback(true); // Quiz erfolgreich
+        }, 1000);
+      } else {
+        button.classList.add('wrong');
+        setTimeout(() => {
+          quizContainer.remove();
+          callback(false); // Quiz nicht erfolgreich
+        }, 1000);
+      }
+    };
+  });
+}
+// Hilfe von Chat-GPT ANFANG
+window.onload = () => {
+  coverTiles.forEach(tile => {
+    const match = /\/([^\/]+)\.jpg/.exec(tile.style.backgroundImage);
+    if (!match) return;
+    const extractedName = match[1];
+    const artist = artistNameMapping[extractedName];
+
+    if (!artist) return;
+
+    const progress = getArtistProgress(artist);
+    if (progress > 0) {
+      tile.classList.remove('locked');
+      tile.style.filter = 'none';
+    }
+  });
+};
+// Hilfe von Chat-GPT ENDE
